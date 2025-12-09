@@ -36,5 +36,4 @@ Files
 - `styles.css` — app styles
 - `app.js` — neural network code, training loop, and visualization
 
-If you want, I can add per-layer activation controls, gradient clipping, alternative optimizers (Adam/momentum), or support for multiple training examples/batches.
 # MathDS-Final
