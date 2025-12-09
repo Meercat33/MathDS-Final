@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Neural Network Visualizer</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Neural Network Visualizer</h1>
+      <p>Vanilla HTML/CSS/JS — build network, set inputs/targets, and train with gradient descent.</p>
+    </header>
+
+    <main>
+      <aside class="controls">
+        <section>
+          <h2>Network</h2>
+          <label>Input size: <input id="input-size" type="number" min="1" value="2"></label>
+          <label>Hidden layers (comma-separated sizes): <input id="hidden-sizes" type="text" placeholder="3,2" value="3"></label>
+          <label>Output size: <input id="output-size" type="number" min="1" value="1"></label>
+          <label>Activation: <select id="activation"><option>None</option><option selected>Sigmoid</option><option>ReLU</option></select></label>
+          <div class="row">
+            <button id="init-random">Init Random</button>
+            <button id="reset">Reset</button>
+          </div>
+        </section>
+
+        <section>
+          <h2>Training</h2>
+          <label>Learning rate: <input id="learning-rate" type="number" step="0.001" value="0.1"></label>
+          <label>Batch mode: <select id="batch-mode"><option>Single</option><option selected>Full</option></select></label>
+          <label>Iterations per step: <input id="iters" type="number" value="1" min="1"></label>
+          <div class="row">
+            <button id="start">Start</button>
+            <button id="pause">Pause</button>
+            <button id="step">Step</button>
+          </div>
+        </section>
+
+        <section>
+          <h2>Data</h2>
+          <label>Inputs (comma): <input id="inputs" value="0.5, -0.2"></label>
+          <label>Targets (comma): <input id="targets" value="0.7"></label>
+        </section>
+
+        <section>
+          <h2>Debug / Info</h2>
+          <div id="loss">Loss: -</div>
+          <div id="step-count">Steps: 0</div>
+        </section>
+      </aside>
+
+      <section class="visual">
+        <div class="viz-top">
+          <svg id="network-viz" width="800" height="400"></svg>
+          <canvas id="loss-plot" width="800" height="160"></canvas>
+        </div>
+        <div class="weights-list">
+          <h3>Weights (selected)</h3>
+          <pre id="weights-inspector">Click edges to inspect weights</pre>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <small>Made with vanilla JS — visualizes live weight updates and loss.</small>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
