@@ -1,30 +1,40 @@
+
 # MathDS-Final
 
-Neural Network Visualizer — a vanilla HTML/CSS/JS frontend app that builds a small fully-connected neural network, lets you set inputs/targets and training hyperparameters, and visualizes weights and loss while training with gradient descent.
+GitHub Pages: https://Meercat33.github.io/MathDS-Final
 
-Quick start
+About
 
-- Open `index.html` in a modern browser (Chrome/Firefox). For best results, serve the folder with a simple static server:
-
-```bash
-# from project root
-python3 -m http.server 8000
-# then open http://localhost:8000 in your browser
-```
+This is a small, client-side Neural Network Visualizer (vanilla HTML/CSS/JS). Build a tiny fully-connected network, set inputs/targets and hyperparameters, and watch weights, activations, and loss update live while training with basic gradient descent.
 
 Features
 
-- Configure input/hidden/output sizes and activation (None, Sigmoid, ReLU).
-- Random initialization of weights/biases.
-- Set learning rate and iterations per step, then Start/Pause/Step training.
-- Live SVG visualization of nodes and weighted edges (color/width reflect sign/magnitude).
-- Loss plot (MSE) updated live.
+- Build network: set input size, hidden layer sizes (comma-separated), and output size.
+- Choose activation: `None`, `Sigmoid`, or `ReLU` (applies to hidden layers; output behavior depends on chosen activation).
+- Random initialization (integer-based, scaled) and reset.
+- Training controls: learning rate, iterations-per-step, viz delay, Start/Pause/Step.
+- Live SVG network diagram: nodes (show activations/inputs/outputs), edges with weight values, and a loss plot (MSE).
+- Click an edge to inspect its weights and bias in the inspector panel.
+
+Recommended parameter boundaries (for stable, visible training)
+
+- Initial weights/biases: scaled integers in approximately [-1, 1] (the app uses integer init × 0.1). Smaller magnitudes reduce numerical overflow.
+- Learning rate: try `0.01` or `0.001` for regression with linear outputs; `0.1` can work for small networks with bounded activations (sigmoid), but may cause instability for deep nets or large targets.
+- Iterations per step: `1–10` — larger values update the model faster but make the viz jumpy.
+- Viz delay (ms): `0` for smooth RAF updates, `100–500` ms to slow and observe individual steps.
+- Targets: when using `Sigmoid` outputs, keep targets in `[0,1]`. For targets outside that range use `None` (linear) or `ReLU` (non-negative) outputs — but be cautious: linear outputs are unbounded and may require smaller learning rates or gradient clipping.
+- Input `x0`: the first input is treated as a constant `1` (bias input) for alignment with bias-based models.
+
+Stability tips
+
+- If loss explodes or becomes `NaN`: reduce the learning rate, lower initial weight scale, or set `Iterations per step` to `1` and add a small `Viz delay` to watch updates.
+- Consider gradient clipping or L2 regularization for more robust training (not enabled by default).
 
 Files
 
-- `index.html` — UI and SVG canvas.
-- `styles.css` — styles.
-- `app.js` — NN implementation, training loop, and visualization.
+- `index.html` — main UI and controls
+- `styles.css` — app styles
+- `app.js` — neural network code, training loop, and visualization
 
-Want enhancements? I can add batching, multiple training examples, adjustable weight initializers, improved backprop for other loss types, or export/import network weights.
+If you want, I can add per-layer activation controls, gradient clipping, alternative optimizers (Adam/momentum), or support for multiple training examples/batches.
 # MathDS-Final
