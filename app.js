@@ -42,9 +42,10 @@ class SimpleNN {
     for(let l=0;l<this.L-1;l++){
       const rows = this.sizes[l+1];
       const cols = this.sizes[l];
-      // initialize weights and biases as integers between -10 and 10
-      const w = Array.from({length:rows},()=>Array.from({length:cols},()=>randInt(-10,10)));
-      const b = Array.from({length:rows},()=>randInt(-10,10));
+      // initialize weights and biases as integers between -10 and 10, then scale to smaller floats
+      const scale = 0.1;
+      const w = Array.from({length:rows},()=>Array.from({length:cols},()=>randInt(-10,10) * scale));
+      const b = Array.from({length:rows},()=>randInt(-10,10) * scale);
       this.weights.push(w);
       this.biases.push(b);
     }
@@ -153,6 +154,11 @@ function trainStep(iterations=1){
   if(!state.net) return;
   const lr = parseFloat($('learning-rate').value) || 0.1;
   const inputs = ($('inputs').value||'').split(',').map(s=>parseFloat(s.trim())).filter(n=>!isNaN(n));
+  // enforce x0 as constant 1 for bias term if available
+  if(state.net && state.net.sizes[0] >= 1){
+    if(inputs.length === 0) inputs = [1];
+    else inputs[0] = 1;
+  }
   const targets = ($('targets').value||'').split(',').map(s=>parseFloat(s.trim())).filter(n=>!isNaN(n));
   if(inputs.length !== state.net.sizes[0] || targets.length !== state.net.sizes[state.net.sizes.length-1]){
     console.warn('Input/target size mismatch');
@@ -167,13 +173,30 @@ function trainStep(iterations=1){
 }
 
 function startTraining(){
-  if(state.running) return; state.running=true; const per = parseInt($('iters').value)||1;
+  if(state.running) return;
+  state.running = true;
+  const per = parseInt($('iters').value)||1;
   function loop(){
-    if(!state.running) return; trainStep(per); rafHandle = requestAnimationFrame(loop);
+    if(!state.running) return;
+    trainStep(per);
+    const delay = parseInt($('viz-delay').value) || 0;
+    if(delay > 0){
+      // use timeout to slow down visuals
+      rafHandle = { type: 'timeout', id: setTimeout(loop, delay) };
+    } else {
+      rafHandle = { type: 'raf', id: requestAnimationFrame(loop) };
+    }
   }
   loop();
 }
-function pauseTraining(){ state.running=false; if(rafHandle) cancelAnimationFrame(rafHandle); }
+function pauseTraining(){
+  state.running = false;
+  if(rafHandle){
+    if(rafHandle.type === 'raf') cancelAnimationFrame(rafHandle.id);
+    else if(rafHandle.type === 'timeout') clearTimeout(rafHandle.id);
+    rafHandle = null;
+  }
+}
 
 // ---------- Visualization ----------
 const svg = $('network-viz');
@@ -227,14 +250,19 @@ function drawNetwork(){
   }
   // draw nodes
   // compute activations (if inputs available)
-  const inputVals = ($('inputs').value||'').split(',').map(s=>parseFloat(s.trim())).filter(n=>!isNaN(n));
+  let inputVals = ($('inputs').value||'').split(',').map(s=>parseFloat(s.trim())).filter(n=>!isNaN(n));
+  // enforce x0 as constant 1 for visualization/bias
+  if(sizes[0] >= 1){
+    if(inputVals.length === 0) inputVals = [1];
+    else inputVals[0] = 1;
+  }
   let forwardA = null;
   if(inputVals.length === sizes[0]){
     forwardA = state.net.forward(inputVals).a;
   }
   const targetVals = ($('targets').value||'').split(',').map(s=>parseFloat(s.trim())).filter(n=>!isNaN(n));
 
-  const r = 16; // node radius
+  const r = 20; // node radius
   for(let l=0;l<layerCount;l++){
     for(let i=0;i<sizes[l];i++){
       const p = nodePositions[l][i];
@@ -250,7 +278,7 @@ function drawNetwork(){
       } else if(forwardA){
         val = forwardA[l][i];
       }
-      const fmt = v => (typeof v === 'number' ? v.toFixed(3) : v);
+      const fmt = v => (typeof v === 'number' ? v.toFixed(2) : v);
       const tv = document.createElementNS('http://www.w3.org/2000/svg','text');
       tv.setAttribute('x', p.x);
       tv.setAttribute('y', p.y + 4);
@@ -264,7 +292,7 @@ function drawNetwork(){
         tt.setAttribute('x', p.x + r + 12);
         tt.setAttribute('y', p.y + 4);
         tt.setAttribute('class','target-label');
-        tt.textContent = `t:${targetVals[i].toFixed(3)}`;
+        tt.textContent = `t:${targetVals[i].toFixed(2)}`;
         svg.appendChild(tt);
       }
     }

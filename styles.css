@@ -21,12 +21,13 @@ main{display:flex;gap:12px;margin-top:12px}
 #weights-inspector{white-space:pre-wrap;color:#dbeafe;max-height:140px;overflow:auto}
 footer{margin-top:12px;color:var(--muted)}
 
-.node{fill:#0ea5e9;stroke:#0b83b8;stroke-width:1.5}
+.node{fill:#0ea5e9;stroke:#0b83b8;stroke-width:2}
 .node.out{fill:#f97316}
 .edge{stroke-linecap:round;opacity:0.95}
 .label{font-size:10px;fill:#dbeafe}
 
-.node-text{fill:#04233a;font-size:12px;text-anchor:middle;dominant-baseline:middle;font-family:monospace}
-.target-label{fill:#34d399;font-size:12px;text-anchor:start;dominant-baseline:middle;font-family:monospace}
+.node-text{fill:#021017;font-size:13px;font-weight:700;text-anchor:middle;dominant-baseline:middle;font-family:monospace}
+.target-label{fill:#10b981;font-size:12px;text-anchor:start;dominant-baseline:middle;font-family:monospace}
+.label{font-size:11px;fill:#dbeafe}
 
 @media (max-width:900px){.container{padding:8px}.controls{width:100%}main{flex-direction:column}}
